@@ -35,7 +35,7 @@ Java 25 + Ghidra 12.1.4 + 托管引擎就位）：
 | MCP 工具总数 | **229** | 装引擎不改变工具清单，改变的是「哪些组真的能用」 |
 | 可用工具组 | **50 / 76** | 剩余 26 组：11 组要先 `open_binary`（`target_required`）、13 组本平台不支持（`unsupported_host`）、2 组缺 JEB（`provider_missing`）|
 | 可用组内工具 | **142** | doctor 的 `toolsInAvailableGroups` |
-| 引擎就绪 | **11 / 13** | 13 个 Windows 可用项；另 8 个引擎 REA 本身不支持 Windows |
+| 引擎就绪 | **13 / 13** | 矩阵 21 行：13 项 Windows 可用（全部 `verified`），另 8 项 REA 本身不支持 Windows |
 | 握手耗时 | **约 0.5 s** | `initialize` + 分页 `tools/list` |
 
 **无引擎基线**（同一台机器、未注入任何 `REA_*`，裸启动 REA）：
@@ -47,10 +47,13 @@ Java 25 + Ghidra 12.1.4 + 托管引擎就位）：
 复现基线：
 
 ```bash
-node dev/verify-mcp.mjs --launcher "<profile>/node_modules/dsh-rea-agents/lib/rea-mcp.mjs"
+REA_POWERPACK_HOME=/tmp/rea-empty node dev/verify-mcp.mjs --launcher "<repo>/lib/rea-mcp.mjs" --list-tools   # 空目录 = 不注入任何引擎
 ```
 
-产物见 `dev/baseline-no-engines.json`（含命令、时间戳与完整 unavailable 列表）。
+产物见 [dev/BASELINES.md](dev/BASELINES.md)（两组基线：`42/77` 与 `50/76`，附复现命令）与
+`dev/baseline-no-engines.json`（含命令、时间戳与完整 unavailable 列表）。
+
+> `dev/` 只随本仓库分发、不进 npm 包，复现命令在 clone 出来的仓库根目录执行。
 
 一句话：powerpack **不扩充 REA 的能力清单，而是让清单里"本该能用"的组真的可用**：
 引擎类 provider 缺口由矩阵补齐；剩下的缺口被逐条解释成「先开目标 / 本平台不支持 /
@@ -206,6 +209,10 @@ npm run check:client  # 在 fake module-loader 下加载 lib/client.js 并校验
 ```
 
 - 测试全部离线：不联网、不调用 pnpm、不写用户目录（临时目录用 `os.tmpdir()`）。
+- 仓库自带 `dev/` 验收工具链（**只随仓库分发，不进 npm 包**，见 [dev/README.md](dev/README.md)）：
+  `node dev/gate.mjs --full` 一次跑完跨切面验收（`dev/acceptance.mjs`）、HTTP 路由探针
+  （`dev/http-probe.mjs`）与单测；`dev/verify-mcp.mjs` 独立做一次真实 stdio MCP 握手并读
+  `binary_session` 的工具可用性；`dev/install-plugin.mjs` 把本仓库 `link:` 进配置档（带备份）。
 - 浏览器半边没有构建步骤，改完 `lib/client.js` 刷新页面即可；
   但模块表在启动时构建，个别情况需要重启 DSH。
 - 结构约定见 [ARCHITECTURE.md](ARCHITECTURE.md)（契约）与本仓库 `docs/`。

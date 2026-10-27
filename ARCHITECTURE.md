@@ -1,4 +1,4 @@
-# dsh-rea-powerpack — 架构与实现契约 (v0.1.1)
+# dsh-rea-powerpack — 架构与实现契约 (v0.1.2)
 
 > 这份文档是**实现契约**：三个并行开发者（core / ui / docs+test）按它写代码，不靠口头约定。
 > 任何偏离契约的改动必须先在 PR 里改这份文档。
@@ -31,6 +31,7 @@ rea-powerpack/
 │   └── client.js               # 浏览器半边（lazy-CJS bundle，无构建步骤）
 ├── docs/                       # ENGINES.md / UPDATES.md / TROUBLESHOOTING.md
 ├── test/                       # node:test
+├── dev/                        # 验收工具链（gate/acceptance/http-probe/verify-mcp/install-plugin；只随仓库分发）
 └── ARCHITECTURE.md
 ```
 
@@ -229,8 +230,9 @@ export default { name, inject, apply }
 - `node --test "test/*.test.mjs"`，覆盖：catalog 完整性 / manifest 往返 / composeEnv 顺序与去重 / 用户 env 优先 / compareVersions（含 `6.8.0-rc.1`）/ decideUpgrade 决策矩阵 / pin.json 往返 / 握手输出解析 / HTTP 路由（fake ctx）/ client bundle 语法与 DICT 对齐 / docs 里的命令与 package.json scripts 一致。
 - CI：Node 22 与 24 矩阵，`npm test` + `npm run lint`。
 - 所有测试**不得联网、不得调用 pnpm、不得写用户目录**（用 `os.tmpdir()`）。
+- `node dev/gate.mjs --full`（仓库内，不进 npm 包）一次跑完跨切面验收 + HTTP 路由探针 + 单测；实测基线与复现命令见 `dev/BASELINES.md`。
 
 ## 9. 版本与发布
 
-- `0.1.0` 首发；`0.1.1` 修复版（launcher junction 入口守卫、loader generator 物化、patch row id 常量、安装脚本依赖丢失）。语义化：新增引擎=minor，修复=patch，破坏契约=major。
+- `0.1.0` 首发；`0.1.1` 修复版（launcher junction 入口守卫、loader generator 物化、patch row id 常量、安装脚本依赖丢失）；`0.1.2` 验收工具链入库 + 文档对齐真机（无运行时代码变更）。语义化：新增引擎=minor，修复=patch，破坏契约=major。
 - 发布：`npm publish --access public`；仓库 `github.com/<you>/dsh-rea-powerpack`；README 顶部给安装命令 `dsh plugin add dsh-rea-powerpack`（CLI 实际转发 pnpm）。

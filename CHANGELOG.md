@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.2 — 验收工具链入库 + 文档对齐真机
+
+没有运行时代码变更：这一版把「怎么验证」也交给用户。
+
+- `dev/` 验收工具链入库（`gate` / `acceptance` / `http-probe` / `verify-mcp` /
+  `install-plugin`），新增 `dev/_layout.mjs` 同时支持「仓库内 `dev/`」与「工作区同级
+  `dev/`」两种布局；`dev/README.md` 说明每个脚本证明什么、退出码怎么读。
+- `dev/BASELINES.md` 重写：无引擎基线（`42/77`）改为用本包自己的 launcher + 空
+  `REA_POWERPACK_HOME` 复现——旧命令指向已下线的 `dsh-rea-agents` launcher，在新机器上跑不通。
+  新增 `dev/baseline-with-engines.json`（`50/76`）。
+- README：复现命令同步、引擎就绪数修正为 **13 / 13**、开发与测试段落补上 dev/ 工具链。
+- ARCHITECTURE：包结构补 `dev/`，§8 补 gate 命令，§9 记录版本历史。
+
 ## 0.1.1 — 首次真机启动后修复（install → restart 全链路跑通）
 
 0.1.0 在真宿主里跑通了 UI 与引擎矩阵，但 MCP 行始终连不上，模型侧一个 mcp__rea__* 工具都没有。

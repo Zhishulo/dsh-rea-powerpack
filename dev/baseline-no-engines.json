@@ -1,0 +1,266 @@
+{
+  "note": "Bare startup: no engine manifest injected. Reproduce with REA_POWERPACK_HOME pointing at an empty directory.",
+  "command": "REA_POWERPACK_HOME=<empty dir> node dev/verify-mcp.mjs --launcher \"<repo>/lib/rea-mcp.mjs\" --list-tools",
+  "capturedAt": "2026-10-27T06:00:58.502Z",
+  "server": {
+    "name": "rea",
+    "version": "6.8.0"
+  },
+  "toolCount": 229,
+  "available": 42,
+  "groups": 77,
+  "toolsInAvailableGroups": 110,
+  "byReason": {
+    "target_required": 11,
+    "provider_unavailable": 7,
+    "unsupported_host": 13,
+    "provider_missing": 4
+  },
+  "unavailable": [
+    {
+      "surface": "official-proxy",
+      "tools": 33,
+      "sample": "address_name,address_to_file_offset,comment,current_address",
+      "reason": "target_required",
+      "remediation": "Call open_binary with a supported local target."
+    },
+    {
+      "surface": "enhanced",
+      "tools": 11,
+      "sample": "analyze_function,analyze_swift_types,batch_decompile,binary_overview",
+      "reason": "target_required",
+      "remediation": "Call open_binary with a supported local target."
+    },
+    {
+      "surface": "official-proxy",
+      "tools": 1,
+      "sample": "annotate_native_function",
+      "reason": "target_required",
+      "remediation": "Call open_binary with a supported local target."
+    },
+    {
+      "surface": "adb-provider",
+      "tools": 4,
+      "sample": "capture_adb_screen,collect_adb_bugreport,pull_adb_file,pull_adb_package",
+      "reason": "provider_unavailable",
+      "remediation": "The selected adb binary was not found: adb"
+    },
+    {
+      "surface": "native-provider",
+      "tools": 1,
+      "sample": "capture_native_ui_scenario",
+      "reason": "unsupported_host",
+      "remediation": "Native macOS utilities require macOS."
+    },
+    {
+      "surface": "session",
+      "tools": 1,
+      "sample": "capture_process_scenario",
+      "reason": "unsupported_host",
+      "remediation": "Run process capture on a supported Linux or macOS host."
+    },
+    {
+      "surface": "apktool-provider",
+      "tools": 1,
+      "sample": "decode_android_resources",
+      "reason": "provider_unavailable",
+      "remediation": "The apktool launcher was not found on the selected Windows PATH/PATHEXT"
+    },
+    {
+      "surface": "artifact-provider",
+      "tools": 4,
+      "sample": "decode_interface_builder,inspect_apk_signature,inspect_keyed_archive,trace_dylib_resolution",
+      "reason": "target_required",
+      "remediation": "Call open_binary with a supported local target."
+    },
+    {
+      "surface": "artifact-provider",
+      "tools": 2,
+      "sample": "decode_signal_recording,inspect_signal_decoders",
+      "reason": "unsupported_host",
+      "remediation": "On Linux, supply sigrok-cli 0.7.2 via absolute REA_SIGROK_COMMAND and util-linux prlimit (REA_SIGROK_PRLIMIT_COMMAND, default /usr/bin/prlimit). No active binary target or hardware is required; the tool is checked at execution."
+    },
+    {
+      "surface": "enhanced",
+      "tools": 1,
+      "sample": "decompile_all",
+      "reason": "target_required",
+      "remediation": "Call open_binary with a supported local target."
+    },
+    {
+      "surface": "jeb-provider",
+      "tools": 3,
+      "sample": "decompile_jeb_item,inspect_jeb_client,list_jeb_units",
+      "reason": "provider_missing",
+      "remediation": "JEB MCP catalog failed. Start a JEB client serving MCP (default http://127.0.0.1:8425/mcp) or set REA_JEB_MCP_URL to the running endpoint."
+    },
+    {
+      "surface": "native-provider",
+      "tools": 4,
+      "sample": "demangle_swift,inspect_macho,inspect_plist,list_architectures",
+      "reason": "unsupported_host",
+      "remediation": "Native macOS utilities require macOS."
+    },
+    {
+      "surface": "artifact-provider",
+      "tools": 1,
+      "sample": "extract_artifact",
+      "reason": "target_required",
+      "remediation": "Call open_binary with a supported local target."
+    },
+    {
+      "surface": "firmware-provider",
+      "tools": 1,
+      "sample": "extract_firmware",
+      "reason": "unsupported_host",
+      "remediation": "On Linux, provide an absolute REA_BINWALK_COMMAND (Binwalk 3.1.x, verified with 3.1.0) or REA_UNBLOB_COMMAND (Unblob 26.6.x, verified with 26.6.4) path and util-linux prlimit. Extraction also requires the selected format’s external extracto"
+    },
+    {
+      "surface": "session",
+      "tools": 1,
+      "sample": "get_navigation_context",
+      "reason": "target_required",
+      "remediation": "Call open_binary with a supported local target."
+    },
+    {
+      "surface": "official-proxy",
+      "tools": 1,
+      "sample": "goto_address",
+      "reason": "target_required",
+      "remediation": "Call open_binary with a supported local target."
+    },
+    {
+      "surface": "adb-provider",
+      "tools": 1,
+      "sample": "inspect_adb_client",
+      "reason": "provider_unavailable",
+      "remediation": "The selected adb binary was not found: adb"
+    },
+    {
+      "surface": "adb-provider",
+      "tools": 13,
+      "sample": "inspect_adb_device,inspect_adb_display,inspect_adb_package,inspect_adb_window",
+      "reason": "provider_unavailable",
+      "remediation": "The selected adb binary was not found: adb"
+    },
+    {
+      "surface": "android-provider",
+      "tools": 5,
+      "sample": "inspect_android_class,inspect_android_method,inspect_android_package,search_android_classes",
+      "reason": "provider_missing",
+      "remediation": "Set REA_JADX_MCP_JAR to the absolute path of a caller-supplied jadx-headless-mcp 0.7.1 JAR. REA does not download or install it."
+    },
+    {
+      "surface": "apktool-provider",
+      "tools": 1,
+      "sample": "inspect_apktool_client",
+      "reason": "provider_unavailable",
+      "remediation": "The apktool launcher was not found on the selected Windows PATH/PATHEXT"
+    },
+    {
+      "surface": "artifact-provider",
+      "tools": 1,
+      "sample": "inspect_artifact",
+      "reason": "target_required",
+      "remediation": "Call open_binary with a supported local target."
+    },
+    {
+      "surface": "artifact-provider",
+      "tools": 1,
+      "sample": "inspect_asset_catalog",
+      "reason": "unsupported_host",
+      "remediation": "Apple asset catalogs require macOS assetutil."
+    },
+    {
+      "surface": "native-provider",
+      "tools": 2,
+      "sample": "inspect_binary_layout,inspect_recorded_crash",
+      "reason": "unsupported_host",
+      "remediation": "On Linux x64, set absolute REA_PWNTOOLS_PYTHON to caller-supplied Python with pwntools 4.15.0. No active binary target is required."
+    },
+    {
+      "surface": "artifact-provider",
+      "tools": 1,
+      "sample": "inspect_evm_interface",
+      "reason": "unsupported_host",
+      "remediation": "The bundled offline EVM interface profile is currently real-verified on Linux x64. No active binary target or chain endpoint is required."
+    },
+    {
+      "surface": "firmware-provider",
+      "tools": 1,
+      "sample": "inspect_firmware_regions",
+      "reason": "unsupported_host",
+      "remediation": "On Linux, provide an absolute REA_BINWALK_COMMAND (Binwalk 3.1.x, verified with 3.1.0) or REA_UNBLOB_COMMAND (Unblob 26.6.x, verified with 26.6.4) path and util-linux prlimit. Extraction also requires the selected format’s external extracto"
+    },
+    {
+      "surface": "enhanced",
+      "tools": 3,
+      "sample": "inspect_native_api,trace_call_path,trace_feature",
+      "reason": "target_required",
+      "remediation": "Call open_binary with a supported local target."
+    },
+    {
+      "surface": "artifact-provider",
+      "tools": 2,
+      "sample": "inspect_packet_capture,inspect_packet_fields",
+      "reason": "unsupported_host",
+      "remediation": "On Linux, supply TShark 4.x on PATH or through absolute REA_TSHARK_COMMAND, and util-linux prlimit (REA_TSHARK_PRLIMIT_COMMAND, default /usr/bin/prlimit). No active binary target or hardware is required; the tool is checked at execution."
+    },
+    {
+      "surface": "native-provider",
+      "tools": 2,
+      "sample": "inspect_signature,observe_native_ui",
+      "reason": "unsupported_host",
+      "remediation": "Native macOS utilities require macOS."
+    },
+    {
+      "surface": "artifact-provider",
+      "tools": 1,
+      "sample": "inspect_wasm_artifact",
+      "reason": "provider_missing",
+      "remediation": "Supply WABT 1.0.42 via absolute REA_WABT_BIN_DIRECTORY. No active binary target is required; tools are checked at execution."
+    },
+    {
+      "surface": "adb-provider",
+      "tools": 5,
+      "sample": "install_adb_package,start_adb_activity,start_adb_app,stop_adb_app",
+      "reason": "provider_unavailable",
+      "remediation": "The selected adb binary was not found: adb"
+    },
+    {
+      "surface": "native-provider",
+      "tools": 1,
+      "sample": "observe_native_calls",
+      "reason": "unsupported_host",
+      "remediation": "Native macOS utilities require macOS."
+    },
+    {
+      "surface": "jeb-provider",
+      "tools": 1,
+      "sample": "open_jeb_project",
+      "reason": "provider_missing",
+      "remediation": "JEB MCP catalog failed. Start a JEB client serving MCP (default http://127.0.0.1:8425/mcp) or set REA_JEB_MCP_URL to the running endpoint."
+    },
+    {
+      "surface": "adb-provider",
+      "tools": 1,
+      "sample": "push_adb_file",
+      "reason": "provider_unavailable",
+      "remediation": "The selected adb binary was not found: adb"
+    },
+    {
+      "surface": "application",
+      "tools": 1,
+      "sample": "recover_javascript_sources",
+      "reason": "unsupported_host",
+      "remediation": "On Linux x64, provide an absolute REA_WAKARU_COMMAND for Wakaru ^1.13.0 (verified with 1.14.0) and util-linux prlimit; see docs/javascript-recovery.md#install-wakaru. No binary target is required."
+    },
+    {
+      "surface": "official-proxy",
+      "tools": 6,
+      "sample": "set_address_name,set_addresses_names,set_bookmark,set_comment",
+      "reason": "target_required",
+      "remediation": "Call open_binary with a supported local target."
+    }
+  ]
+}
