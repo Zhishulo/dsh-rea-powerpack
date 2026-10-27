@@ -1,4 +1,4 @@
-# dsh-rea-powerpack — 架构与实现契约 (v0.1.0)
+# dsh-rea-powerpack — 架构与实现契约 (v0.1.1)
 
 > 这份文档是**实现契约**：三个并行开发者（core / ui / docs+test）按它写代码，不靠口头约定。
 > 任何偏离契约的改动必须先在 PR 里改这份文档。
@@ -23,6 +23,7 @@ rea-powerpack/
 ├── lib/
 │   ├── index.js                # 宿主半边：路由 + 编排 + 后台检查（export name/inject/apply）
 │   ├── catalog.js              # 引擎目录（纯数据 + 查询函数，无 IO）
+│   ├── version.js              # 从 package.json 读出 name/version（唯一版本源）
 │   ├── engines.js              # 引擎检测/安装/校验/环境变量合成
 │   ├── pin.js                  # 版本 pin、registry 查询、影子预检、升级/回滚
 │   ├── reload.js               # MCP 行热重载（带 patch 文件快照护栏）
@@ -116,6 +117,13 @@ export function forPlatform(platform, host): EngineSpec[]   // 过滤 platform �
 
 **Windows 上明确 unsupported_host（不要提供安装按钮，只解释）**：`tshark/capinfos`（pcap 抓包）、`binwalk/unblob`（固件）、`sigrok-cli`（信号）、`pwntools`（ELF/core）、`wakaru`（JS 反混淆）、`process-capture`。catalog 里以 `hostUnsupported:'win32'` + `notes` 形式存在，`forPlatform` 保留它们以便 UI 解释。
 
+### lib/version.js
+```js
+export const PACKAGE_NAME: string      // "dsh-rea-powerpack"
+export const PACKAGE_VERSION: string   // package.json version
+```
+唯一版本源：`/state.self`、引擎下载 User-Agent、MCP 握手 `clientInfo` 全部读这里，**禁止**在代码里写字面量版本号（改版本只动 `package.json`）。
+
 ### lib/engines.js
 ```js
 export function powerpackHome(profileDir): string
@@ -164,6 +172,8 @@ argv: `<profileDir> mcp`。行为：`powerpackHome()` → `composeEnv` → 应�
 - pin 缺失：stderr 打印 `rea-powerpack: rea-agents is not installed in <profile>; open Settings → REA Powerpack → Install` 并 exit 1；
 - 引擎缺失：stderr 一行 warn（`rea-powerpack: N tier-1 engines missing (adb, apktool); their tools will report provider_unavailable`），**继续启动**；
 - `REA_POWERPACK_TRACE=1`：stderr 打印合成后的 env **键名**（不打印值）。
+- 入口守卫 `isEntryPoint(argv, selfPath)` 必须做**真实路径**比较：宿主通过 profile 的 `node_modules/dsh-rea-powerpack`（pnpm `link:` junction）启动时，`process.argv[1]` 是软链路径而 `import.meta.url` 被 Node 解析成真实路径，纯字符串比较会静默 no-op（进程 exit 0、无输出，MCP 端表现为启动超时）。实现：先比 `resolve()`，不等再 `realpathSync()`，**两侧都 toLowerCase()** 后比较。
+- Node 版本不足 `rea-agents.engines.node` 时（Desktop 的 Electron-as-node 24.21 < 24.22）自动 re-exec 到满足要求的 `node.exe`，用 `REA_POWERPACK_EXEC=1` 防重入，stderr 打一行说明。
 
 ### lib/index.js
 ```js
@@ -173,7 +183,7 @@ export function apply(ctx) { ... }
 export default { name, inject, apply }
 ```
 - 路由注册：`ctx.effect(() => ctx.webServer.register({kind:'prefix', path:'/rea-powerpack', handler}))`
-- row 状态：`ctx.loader?.entries?.()` 找 `rea-powerpack-mcp`；`conflict`：若同时存在 `rea-agents-mcp`（dsh-rea-agents）→ `{kind:'server_name_conflict', detail:'dsh-rea-agents'}`
+- row 状态：`ctx.loader?.entries?.()`（**cordis 里是 generator**，必须 `Array.from` 物化；`Array.isArray` 判空会让 /state 永远 present:false、/reload 永远 restart-required）；`Entry.id` 带父前缀（`parentId:childId`），匹配要允许 `endsWith(':'+id)`；`Entry.disabled` 是 getter（会求值 `!!js`），取值必须 try/catch。以此找 `rea-powerpack-mcp`；`conflict`：若同时存在 `rea-agents-mcp`（dsh-rea-agents）→ `{kind:'server_name_conflict', detail:'dsh-rea-agents'}`
 - 后台任务：`setInterval`（`ctx.effect` 清理）按 `checkIntervalHours` 查新；`updatePolicy:'auto-idle'` 时**只在最近 10 分钟无活动**才升级——用 `ctx.get('agentLoop')`/session 活动时间不可靠，v0.1 判定规则简化为：距上次 `/state` 或任何 API 调用 >10 分钟且 `now - lastReload > 10min`；不满足则只置 `latestKnown` 并发通知。
 - 所有 pnpm 调用走 `execFile`，`cwd = profileDir`，`maxBuffer = 16MB`，超时 `INSTALL_TIMEOUT_MS = 15min`；不得使用 `shell:true`。
 
@@ -222,5 +232,5 @@ export default { name, inject, apply }
 
 ## 9. 版本与发布
 
-- `0.1.0` 首发；语义化：新增引擎=minor，修复=patch，破坏契约=major。
+- `0.1.0` 首发；`0.1.1` 修复版（launcher junction 入口守卫、loader generator 物化、patch row id 常量、安装脚本依赖丢失）。语义化：新增引擎=minor，修复=patch，破坏契约=major。
 - 发布：`npm publish --access public`；仓库 `github.com/<you>/dsh-rea-powerpack`；README 顶部给安装命令 `dsh plugin add dsh-rea-powerpack`（CLI 实际转发 pnpm）。

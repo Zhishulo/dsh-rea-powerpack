@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { symlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
@@ -95,6 +96,29 @@ test('rea-mcp: isEntryPoint only fires for a direct launch', () => {
   assert.equal(isEntryPoint(['node', self], self), true);
   assert.equal(isEntryPoint(['node', resolve('/tmp/other.mjs')], self), false);
   assert.equal(isEntryPoint(['node'], self), false);
+});
+
+test('rea-mcp: isEntryPoint accepts a junction path for the real launcher', async () => {
+  // The host starts the launcher through <profile>/node_modules/dsh-rea-powerpack,
+  // which install-plugin.mjs creates as a junction to the unpacked plugin
+  // directory. Node resolves import.meta.url to the real path, so the guard must
+  // compare files, not strings.
+  const root = await mkdtemp(join(tmpdir(), 'rea-powerpack-entry-'));
+  try {
+    const realDir = join(root, 'real');
+    const linkDir = join(root, 'linked');
+    await mkdir(join(realDir, 'lib'), { recursive: true });
+    const realFile = join(realDir, 'lib', 'rea-mcp.mjs');
+    await writeFile(realFile, '// launcher\n');
+    symlinkSync(realDir, linkDir, 'junction');
+    const viaLink = join(linkDir, 'lib', 'rea-mcp.mjs');
+    assert.notEqual(resolve(viaLink), resolve(realFile));
+    assert.equal(isEntryPoint(['node', viaLink], realFile), true);
+    assert.equal(isEntryPoint(['node', realFile], viaLink), true);
+    assert.equal(isEntryPoint(['node', join(linkDir, 'lib', 'other.mjs')], realFile), false);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });
 
 test('rea-mcp: readReaNodeRange falls back to the built-in floor', async () => {

@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.1.1 — 首次真机启动后修复（install → restart 全链路跑通）
+
+0.1.0 在真宿主里跑通了 UI 与引擎矩阵，但 MCP 行始终连不上，模型侧一个 mcp__rea__* 工具都没有。
+四个真实缺陷逐一复现、修掉，并各补了回归测试：
+
+### 1. 启动器通过 profile junction 启动时静默退出（致命）
+宿主按 <profile>/node_modules/dsh-rea-powerpack/lib/rea-mcp.mjs 启动（pnpm link: 建的是 junction），
+而 Node 把 import.meta.url 解析成真实路径，isEntryPoint 只做字符串比较 → 守卫判定「不是入口」，
+进程 exit 0、stdout/stderr 全空，MCP 客户端只能看到启动超时。
+现在先比 resolve()，不等再 realpathSync()，两侧统一 toLowerCase() 后比较。
+另把 fail() 的「写 stderr 后立即 exit」改成抛 LauncherError（Windows 管道下 stderr 是异步的，立即退出会吞掉错误行）。
+
+### 2. ctx.loader.entries() 是 generator，被当成数组
+Array.isArray(entries) ? entries : [] 永远得到空数组 → /state.mcp.present 恒为 false，
+/reload 恒回 restart-required（即使行就在那里）。改为 Array.from 物化；
+Entry.id 带父前缀（parentId:childId）故匹配允许 endsWith(':'+id)；Entry.disabled 是求值 !!js 的 getter，读取包 try/catch。
+
+### 3. ROW_ID 常量与 cordis.patch.yml 写入的行 id 不一致
+const ROW_ID = SELF + '-mcp' 得到 dsh-rea-powerpack-mcp，而 patch 里插入的是 rea-powerpack-mcp
+→ 宿主永远找不到该行。改为字面量并在 acceptance 里加交叉校验（从 lib/index.js 正则抽 ROW_ID 与 patch 行 id 比对）。
+
+### 4. 安装脚本静默丢依赖
+dev/install-plugin.mjs 在 pnpm add 之前读取 package.json，之后又把旧对象写回，
+把刚加上的 dsh-rea-powerpack 依赖抹掉（首次真实安装即中招）。改为 pnpm 完成后重新读取再改。
+
+### 其它
+- lib/version.js：package.json 成为唯一版本源，/state.self、下载 User-Agent、MCP clientInfo 不再各写一份字面量。
+- 安装脚本在移除 dsh-rea-agents bundle 时，改为整块删除残留的 rea-agents-mcp patch 行（bundle 已不再提供其 config，保留下来是非法行）。
+- 回归测试：isEntryPoint 接受 junction 路径（真实路径 + 软链路径双向）、/state 能识别 generator 形式的 loader 行；
+  acceptance 51 → 55 checks，新增「loader 行物化」「入口守卫归一化链接」「经 profile junction 的 MCP 握手 229 工具」三项。
+- node dev/gate.mjs --full → ALL GREEN（55/55 + 30/30 HTTP + 全部 unit）。
+
 ## 0.1.0 — 首个公开版本
 
 ### 引擎（把 REA 从"能握手"变成"真能干活"）

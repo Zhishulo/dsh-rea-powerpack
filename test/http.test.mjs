@@ -83,7 +83,7 @@ async function loadPlugin() {
  * Boot the plugin host half against a throwaway powerpack home and hand back
  * the registered prepare function. Everything the test creates is disposed.
  */
-async function boot(t) {
+async function boot(t, options = {}) {
   const home = await mkdtemp(join(tmpdir(), 'rea-powerpack-http-'));
   const previousHome = process.env.REA_POWERPACK_HOME;
   process.env.REA_POWERPACK_HOME = home;
@@ -110,7 +110,7 @@ async function boot(t) {
         return () => {};
       },
     },
-    loader: {
+    loader: options.loader || {
       entries() {
         return [];
       },
@@ -177,6 +177,29 @@ test('http: GET /state returns the documented snapshot', { skip: missing }, asyn
   assert.ok(body.host && typeof body.host === 'object');
   assert.equal(body.host.platform, process.platform);
   assert.equal(body.settings.updatePolicy, 'notify');
+});
+
+test('http: /state sees a loader row exposed as a generator', { skip: missing }, async (t) => {
+  // cordis-plugin-loader's EntryTree.entries() is a generator; treating the
+  // iterator as an array made every install report mcp.present === false.
+  const loader = {
+    *entries() {
+      yield {
+        id: 'rea-powerpack-mcp',
+        options: { id: 'rea-powerpack-mcp', name: '@deepseek-ai/dsh-mcp-client', config: { serverName: 'rea' } },
+        disabled: false,
+        fiber: {},
+      };
+    },
+    async update() {},
+    async await() {},
+  };
+  const { registration } = await boot(t, { loader });
+  const res = await call(registration, 'GET', '/rea-powerpack/state');
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.json.mcp.rowId, 'rea-powerpack-mcp', 'the loaded row is reported by id');
+  assert.equal(res.json.mcp.present, true);
+  assert.equal(res.json.mcp.disabled, false);
 });
 
 test('http: a non-loopback request is refused with loopback_only', { skip: missing }, async (t) => {
