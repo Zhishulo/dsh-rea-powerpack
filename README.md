@@ -7,6 +7,12 @@
 托管代码、Electron/JavaScript、固件、浏览器目标都能拆。但它只是**适配层**——
 Ghidra、JADX、WABT、frida 这些引擎得在这台机器上真的能跑。
 
+[![ci](https://github.com/Zhishulo/dsh-rea-powerpack/actions/workflows/ci.yml/badge.svg)](https://github.com/Zhishulo/dsh-rea-powerpack/actions/workflows/ci.yml)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![node](https://img.shields.io/badge/node-%3E%3D22.19.0-brightgreen.svg)](package.json)
+[![version](https://img.shields.io/badge/version-0.1.3-informational.svg)](CHANGELOG.md)
+
+仓库：<https://github.com/Zhishulo/dsh-rea-powerpack>（源码与 issue 都在这里；npm 包尚未发布）
 dsh-rea-powerpack 干三件事：
 
 1. **引擎**：按矩阵检测 / 安装 / 卸载分析引擎，合成 `env` 与 `PATH` 喂给 REA；
@@ -63,20 +69,46 @@ REA_POWERPACK_HOME=/tmp/rea-empty node dev/verify-mcp.mjs --launcher "<repo>/lib
 
 要求 **Node >= 22.19.0**（REA 自身要求），DSH 桌面版 / web / tui 均可。
 
-- **Desktop（推荐）**：侧栏 **插件 → 添加** → 填来源 → 安装。
-  Desktop 的 profile 由 Electron 独占管理，`dsh plugin --profile desktop` 会被拒绝，
-  这是 DSH 的硬约束。
-- **web / tui**：
+> **发布状态**：源码已开源，**npm 包尚未发布** —— `npm i dsh-rea-powerpack` 现在会 404。
+> 下面「从源码安装」是当前唯一可用的方式。
 
-  ```bash
-  dsh plugin --profile web add dsh-rea-powerpack          # npm 包
-  dsh plugin --profile web add file:D:/path/to/rea-powerpack  # 本地开发（link）
-  dsh plugin --profile web ls                            # 确认已装
-  ```
+### 从源码安装（当前唯一方式）
 
-装完重启 DSH。插件会向 `cordis.patch.yml` 注入两行：
-`dsh-rea-powerpack`（卡片宿主）与 `rea-powerpack-mcp`（名为 `rea` 的 MCP 服务）。
+```bash
+git clone https://github.com/Zhishulo/dsh-rea-powerpack.git
+cd dsh-rea-powerpack
+node dev/install-plugin.mjs --repo . --dry-run   # 先看它准备改什么
+node dev/install-plugin.mjs --repo .             # 真正安装
+```
 
+> `git clone` 若报 `schannel: failed to receive handshake`，是本地代理/网络抖动，
+> 重试 2–3 次即可，与本仓库无关。
+
+桌面版也可以走 UI：侧栏 **插件 → 添加**，来源填刚 clone 下来的目录（`file:<绝对路径>`）。
+
+`dev/install-plugin.mjs` 只做四件事（`--profile <dir>` 覆盖默认的
+`~/.dsh/profiles/desktop`，`--uninstall` 反向执行）：
+
+1. 备份 profile 的 `package.json` / `cordis.patch.yml` / `pnpm-lock.yaml` 到
+   `<profile>/.rea-powerpack-backup/<时间戳>/`；
+2. 在 profile 里 `pnpm add "link:<repo>" --save-exact`（junction 安装：改仓库代码不用重装）；
+3. 把 `dsh-rea-powerpack` 写进 `dsh.profile.bundles`，并把旧的 `dsh-rea-agents` 从 bundles 移除
+   （两个 bundle 都会挂一行名为 `rea` 的 MCP client，同时开会撞车）；
+4. 清掉 profile `cordis.patch.yml` 里残留的 `- id: rea-agents*` 行（原文件留在备份里）。
+
+装完**重启 DSH**：bundle 列表与 patch 层在 boot 时一次性合成。
+插件向配置注入两行：`dsh-rea-powerpack`（卡片宿主）与 `rea-powerpack-mcp`（名为 `rea` 的 MCP 服务，
+所以工具仍是 `mcp__rea__*`）。
+
+### web / tui 手动安装
+
+```bash
+dsh plugin --profile web add file:D:/path/to/rea-powerpack
+dsh plugin --profile web ls
+```
+
+> Desktop 的 profile 由 Electron 独占管理，`dsh plugin --profile desktop` 会被拒绝，
+> 这是 DSH 的硬约束。
 > 插件**不安装分析引擎以外的任何东西**，也不会改写你的全局环境变量或注册表。
 
 ## 首次配置

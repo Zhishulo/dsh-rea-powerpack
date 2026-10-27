@@ -2,6 +2,10 @@
 
 ## 0.1.3 — CI 覆盖目标平台 + 测试与宿主机解耦
 
+
+- README：加 CI / License / Node / 版本徽章和仓库链接；「安装」段改写为诚实版——
+  **npm 未发布**，唯一可用路径是 clone 后跑 `node dev/install-plugin.mjs --repo .`，
+  并写清 installer 的四件事与 `--dry-run` / `--uninstall` / `--profile`。
 首推后 GitHub Actions 立刻变红：`composeEnv` 按 `process.platform` 过滤引擎目录，而引擎目录是
 Windows 定向的（`forPlatform('linux')` 为空），所以「空清单应报告哪些引擎缺失」这条断言在
 ubuntu runner 上得到 `[]`。这是测试依赖宿主机，不是实现错了。
