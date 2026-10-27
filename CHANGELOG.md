@@ -6,8 +6,13 @@
 Windows 定向的（`forPlatform('linux')` 为空），所以「空清单应报告哪些引擎缺失」这条断言在
 ubuntu runner 上得到 `[]`。这是测试依赖宿主机，不是实现错了。
 
-- `composeEnv(home, settings, platform = process.platform)` 新增可注入的 platform（默认仍是宿主），
-  体检与测试都能针对固定平台推理；`engines.test.mjs` 的 6 处调用统一钉住 `'win32'`。
+- `composeEnv(home, settings, platform = process.platform)` 与
+  `powerpackHome(profileDir, platform = process.platform, env = process.env)` 新增可注入的
+  platform/env（默认仍是宿主），体检与测试都能针对固定平台推理；
+  `engines.test.mjs` 的 6 处 composeEnv 调用钉住 `'win32'`，powerpackHome 的用例覆盖
+  win32 / darwin / linux 三条分支（原来只测 win32）。
+- `catalog.test.mjs` 不再假设宿主就是 Windows：默认平台断言改为
+  `forPlatform() === forPlatform(process.platform)`。
 - CI 矩阵改为 `os: [windows-latest, ubuntu-latest] × node: [22, 24]`：Windows 腿是插件真正的目标平台，
   Linux 腿保证纯逻辑测试保持与宿主机无关。
 - `docs.test.mjs` 的 CI 断言同步到新矩阵（检查 os 列表与 `runs-on: ${{ matrix.os }}`）。

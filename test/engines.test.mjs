@@ -71,22 +71,26 @@ test.after(function afterAll() {
   restoreEnv();
 });
 
-test('powerpackHome honours REA_POWERPACK_HOME and otherwise resolves per platform', async function () {
-  const home = await tempHome();
-  try {
-    process.env.REA_POWERPACK_HOME = home;
-    assert.equal(powerpackHome('C:\\profile'), path.resolve(home));
-    process.env.REA_POWERPACK_HOME = '   ';
-    const local = await tempHome();
-    process.env.LOCALAPPDATA = local;
-    assert.equal(powerpackHome('C:\\profile'), path.join(local, 'rea-powerpack'));
-    delete process.env.REA_POWERPACK_HOME;
-    assert.equal(powerpackHome('C:\\profile'), path.join(local, 'rea-powerpack'));
-  } finally {
-    restoreEnv();
-  }
+test('powerpackHome honours REA_POWERPACK_HOME and resolves every target platform', async function () {
+  const configured = await tempHome();
+  assert.equal(powerpackHome('C:\\profile', 'win32', { REA_POWERPACK_HOME: configured }), path.resolve(configured));
+  assert.ok(
+    powerpackHome('C:\\profile', 'win32', { REA_POWERPACK_HOME: '   ' }).endsWith(path.join('AppData', 'Local', 'rea-powerpack')),
+    'a blank override falls through to the platform default',
+  );
+  const local = await tempHome();
+  assert.equal(powerpackHome('C:\\profile', 'win32', { LOCALAPPDATA: local }), path.join(local, 'rea-powerpack'));
+  assert.equal(
+    powerpackHome('C:\\profile', 'darwin', {}),
+    path.join(os.homedir(), 'Library', 'Application Support', 'rea-powerpack'),
+  );
+  const state = await tempHome();
+  assert.equal(powerpackHome('C:\\profile', 'linux', { XDG_STATE_HOME: state }), path.join(state, 'rea-powerpack'));
+  assert.equal(
+    powerpackHome('C:\\profile', 'linux', {}),
+    path.join(os.homedir(), '.local', 'state', 'rea-powerpack'),
+  );
 });
-
 test('engineRoot defaults under the home and accepts an absolute override', async function () {
   const home = await tempHome();
   const custom = await tempHome();
