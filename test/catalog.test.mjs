@@ -182,7 +182,9 @@ test('catalog: forPlatform keeps unsupported entries so the UI can explain them'
   assert.equal(win.length, ENGINES.length, 'every catalog entry applies to win32');
   assert.deepEqual(forPlatform('linux'), [], 'no catalog entry claims Linux');
   assert.deepEqual(forPlatform('darwin'), [], 'no catalog entry claims macOS');
-  assert.equal(forPlatform().length, ENGINES.length, 'defaulting to the host keeps entries');
+  // The catalog is Windows-targeted, so on a non-Windows host the default is
+  // legitimately empty: assert the default tracks the host instead of assuming it.
+  assert.deepEqual(forPlatform(), forPlatform(process.platform), 'defaulting to the host keeps entries');
 });
 
 test('catalog: installableEngines excludes the unsupported lanes', function () {
