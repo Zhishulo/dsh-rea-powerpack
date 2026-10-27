@@ -3,6 +3,27 @@
   "version": "0.1.3",
   "description": "Maxed-out REA for DeepSeek Harness: managed analysis engines (adb, apktool, jadx, Ghidra, WABT, frida), a pinned rea-agents MCP server, health-checked updates and a capability doctor.",
   "license": "MIT",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "rea",
+    "reverse-engineering",
+    "mcp",
+    "ghidra",
+    "jadx",
+    "apktool",
+    "adb",
+    "frida",
+    "wabt",
+    "binary-analysis",
+    "deepseek",
+    "electron",
+    "static-analysis"
+  ],
+  "engines": {
+    "node": ">=22.19.0"
+  },
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -12,6 +33,18 @@
     "./client": "./lib/client.js",
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-settings"
+      ]
+    }
   },
   "files": [
     "lib",
@@ -27,24 +60,6 @@
     "lint": "node --check lib/index.js && node --check lib/catalog.js && node --check lib/engines.js && node --check lib/pin.js && node --check lib/reload.js",
     "check:client": "node test/client-bundle.mjs"
   },
-  "keywords": [
-    "deepseek-harness",
-    "dsh",
-    "dsh-plugin",
-    "rea",
-    "reverse-engineering",
-    "mcp",
-    "ghidra",
-    "jadx",
-    "apktool",
-    "adb",
-    "frida",
-    "wabt",
-    "binary-analysis"
-  ],
-  "engines": {
-    "node": ">=22.19.0"
-  },
   "peerDependencies": {
     "@deepseek-ai/dsh": ">=0.1.6-alpha.1 <0.2.0-0 || >=0.2.0-rc.1 <0.3.0-0"
   },
@@ -53,16 +68,13 @@
       "optional": true
     }
   },
-  "dsh": {
-    "bundle": {
-      "patch": "./cordis.patch.yml"
-    },
-    "client": {
-      "platform": "web",
-      "inject": [
-        "@deepseek-ai/dsh-client-locale",
-        "@deepseek-ai/dsh-client-ui-settings"
-      ]
-    }
+  "author": "Zhishulo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zhishulo/dsh-rea-powerpack.git"
+  },
+  "homepage": "https://github.com/Zhishulo/dsh-rea-powerpack#readme",
+  "bugs": {
+    "url": "https://github.com/Zhishulo/dsh-rea-powerpack/issues"
   }
 }
