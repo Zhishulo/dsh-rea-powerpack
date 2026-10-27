@@ -1,0 +1,44 @@
+{
+  "name": "dsh-rea-powerpack",
+  "version": "0.1.0",
+  "description": "Maxed-out REA for DeepSeek Harness: managed analysis engines (adb, apktool, jadx, Ghidra, WABT, frida), a pinned rea-agents MCP server, health-checked updates and a capability doctor.",
+  "license": "MIT",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": { "default": "./lib/index.js" },
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "docs",
+    "cordis.patch.yml",
+    "README.md",
+    "ARCHITECTURE.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\"",
+    "lint": "node --check lib/index.js && node --check lib/catalog.js && node --check lib/engines.js && node --check lib/pin.js && node --check lib/reload.js",
+    "check:client": "node test/client-bundle.mjs"
+  },
+  "keywords": [
+    "deepseek-harness", "dsh", "dsh-plugin", "rea", "reverse-engineering",
+    "mcp", "ghidra", "jadx", "apktool", "adb", "frida", "wabt", "binary-analysis"
+  ],
+  "engines": { "node": ">=22.19.0" },
+  "peerDependencies": {
+    "@deepseek-ai/dsh": ">=0.1.6-alpha.1 <0.2.0-0 || >=0.2.0-rc.1 <0.3.0-0"
+  },
+  "peerDependenciesMeta": { "@deepseek-ai/dsh": { "optional": true } },
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": { "platform": "web", "inject": [
+      "@deepseek-ai/dsh-client-locale",
+      "@deepseek-ai/dsh-client-ui-settings"
+    ] }
+  }
+}

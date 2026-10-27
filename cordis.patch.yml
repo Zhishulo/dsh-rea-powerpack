@@ -1,0 +1,27 @@
+# dsh-rea-powerpack — loader patch
+#
+# Two rows:
+#   1. rea-powerpack      — the host plugin (HTTP API + orchestration, no tools)
+#   2. rea-powerpack-mcp  — the MCP client row that mounts REA as mcp__rea__*
+#
+# Do not rename the row id: `rea-agents-mcp` is deliberately NOT used so that
+# an existing dsh-rea-agents install cannot shadow/override this row.
+#
+# args resolution: DSH_PROFILE_DIR when the loader exposes it, else the standard
+# ~/.dsh/profiles/<profile> location. Tool call timeout is raised to 15 minutes
+# because Ghidra decompilation of large remote binaries routinely exceeds 60s.
+
+- insert:
+    - id: rea-powerpack
+      name: dsh-rea-powerpack
+    - id: rea-powerpack-mcp
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: rea
+        transport: stdio
+        command: !!js "process.execPath"
+        args: !!js "(() => { const profile = process.env.DSH_PROFILE_DIR || ctx.dshHomePath('profiles', process.env.DSH_PROFILE || 'desktop'); return [profile + '/node_modules/dsh-rea-powerpack/lib/rea-mcp.mjs', profile, 'mcp']; })()"
+        env:
+          ELECTRON_RUN_AS_NODE: '1'
+        toolCallTimeoutMs: 900000
+        failOnStartupError: false
