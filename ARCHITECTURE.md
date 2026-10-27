@@ -235,4 +235,4 @@ export default { name, inject, apply }
 ## 9. 版本与发布
 
 - `0.1.0` 首发；`0.1.1` 修复版（launcher junction 入口守卫、loader generator 物化、patch row id 常量、安装脚本依赖丢失）；`0.1.2` 验收工具链入库 + 文档对齐真机（无运行时代码变更）；`0.1.3` `composeEnv` 增加可注入 platform，CI 矩阵覆盖 Windows 目标平台 + Linux 纯逻辑腿。语义化：新增引擎=minor，修复=patch，破坏契约=major。
-- 发布：`npm publish --access public`；仓库 `github.com/<you>/dsh-rea-powerpack`；README 顶部给安装命令 `dsh plugin add dsh-rea-powerpack`（CLI 实际转发 pnpm）。
+- 发布：源码仓库 `github.com/Zhishulo/dsh-rea-powerpack`（public，CI 4 腿全绿，tag `v0.1.3`）。**npm 尚未发布**：`registry.npmjs.org/dsh-rea-powerpack` 返回 404，发布需要 `npm login` + `npm publish --access public`；发布后再把 README 安装段换成 `dsh plugin add dsh-rea-powerpack`（CLI 实际转发 pnpm）。

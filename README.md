@@ -187,8 +187,9 @@ sigrok、pwntools、wakaru、process-capture）：卡片会以 `unsupported_host
 
 ## 日常维护：升级、卸载、重启
 
-- **升级插件本体**：桌面版在 插件页 对该插件点更新；web/tui 用同一条
-  `dsh plugin --profile web add dsh-rea-powerpack` 刷新版本。
+- **升级插件本体**（从源码安装时）：`cd` 进仓库 `git pull`，再跑一次
+  `node dev/install-plugin.mjs --repo .`；桌面版也可以在 插件页 对该插件点更新。
+  （npm 包发布后，web/tui 直接 `dsh plugin --profile web add dsh-rea-powerpack` 即可。）
 - **卸载插件**：桌面版在 插件页 移除；web/tui
   `dsh plugin --profile web remove dsh-rea-powerpack`。
   移除后 `cordis.patch.yml` 里的两行（宿主 + MCP）随之失效，不会留下半个服务。
