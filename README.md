@@ -8,11 +8,12 @@
 Ghidra、JADX、WABT、frida 这些引擎得在这台机器上真的能跑。
 
 [![ci](https://github.com/Zhishulo/dsh-rea-powerpack/actions/workflows/ci.yml/badge.svg)](https://github.com/Zhishulo/dsh-rea-powerpack/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/dsh-rea-powerpack.svg)](https://www.npmjs.com/package/dsh-rea-powerpack)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D22.19.0-brightgreen.svg)](package.json)
-[![version](https://img.shields.io/badge/version-0.1.3-informational.svg)](CHANGELOG.md)
+[![version](https://img.shields.io/badge/version-0.1.4-informational.svg)](CHANGELOG.md)
 
-仓库：<https://github.com/Zhishulo/dsh-rea-powerpack>（源码与 issue 都在这里；npm 包尚未发布）
+仓库：<https://github.com/Zhishulo/dsh-rea-powerpack> · npm：<https://www.npmjs.com/package/dsh-rea-powerpack>（源码、issue 与发行版都在这里）
 dsh-rea-powerpack 干三件事：
 
 1. **引擎**：按矩阵检测 / 安装 / 卸载分析引擎，合成 `env` 与 `PATH` 喂给 REA；
@@ -69,10 +70,26 @@ REA_POWERPACK_HOME=/tmp/rea-empty node dev/verify-mcp.mjs --launcher "<repo>/lib
 
 要求 **Node >= 22.19.0**（REA 自身要求），DSH 桌面版 / web / tui 均可。
 
-> **发布状态**：源码已开源，**npm 包尚未发布** —— `npm i dsh-rea-powerpack` 现在会 404。
-> 下面「从源码安装」是当前唯一可用的方式。
+> **发布状态**：已发布到 npm —— <https://www.npmjs.com/package/dsh-rea-powerpack>
+> （首版 `0.1.3`，当前 `0.1.4`）。
 
-### 从源码安装（当前唯一方式）
+### npm 安装（推荐）
+
+桌面版：设置 → 插件 → **添加**，来源填包名 `dsh-rea-powerpack`。
+
+web / tui：
+
+```bash
+dsh plugin --profile web add dsh-rea-powerpack
+dsh plugin --profile web ls
+```
+
+> Desktop 的 profile 由 Electron 独占管理，`dsh plugin --profile desktop` 会被拒绝 ——
+> 这是 DSH 的硬约束，桌面用户请走上面的 UI。
+
+### 从源码安装（开发者 / 想改代码）
+
+junction 装法：改仓库里的代码不用重装，刷新即生效。
 
 ```bash
 git clone https://github.com/Zhishulo/dsh-rea-powerpack.git
@@ -100,15 +117,6 @@ node dev/install-plugin.mjs --repo .             # 真正安装
 插件向配置注入两行：`dsh-rea-powerpack`（卡片宿主）与 `rea-powerpack-mcp`（名为 `rea` 的 MCP 服务，
 所以工具仍是 `mcp__rea__*`）。
 
-### web / tui 手动安装
-
-```bash
-dsh plugin --profile web add file:D:/path/to/rea-powerpack
-dsh plugin --profile web ls
-```
-
-> Desktop 的 profile 由 Electron 独占管理，`dsh plugin --profile desktop` 会被拒绝，
-> 这是 DSH 的硬约束。
 > 插件**不安装分析引擎以外的任何东西**，也不会改写你的全局环境变量或注册表。
 
 ## 首次配置
@@ -187,9 +195,9 @@ sigrok、pwntools、wakaru、process-capture）：卡片会以 `unsupported_host
 
 ## 日常维护：升级、卸载、重启
 
-- **升级插件本体**（从源码安装时）：`cd` 进仓库 `git pull`，再跑一次
-  `node dev/install-plugin.mjs --repo .`；桌面版也可以在 插件页 对该插件点更新。
-  （npm 包发布后，web/tui 直接 `dsh plugin --profile web add dsh-rea-powerpack` 即可。）
+- **升级插件本体**（npm 安装）：桌面版在 插件页 对该插件点**更新**；web/tui 跑
+  `dsh plugin --profile web add dsh-rea-powerpack`（会拉到 registry 最新版）。
+  从源码安装的话：`cd` 进仓库 `git pull`，再跑一次 `node dev/install-plugin.mjs --repo .`。
 - **卸载插件**：桌面版在 插件页 移除；web/tui
   `dsh plugin --profile web remove dsh-rea-powerpack`。
   移除后 `cordis.patch.yml` 里的两行（宿主 + MCP）随之失效，不会留下半个服务。

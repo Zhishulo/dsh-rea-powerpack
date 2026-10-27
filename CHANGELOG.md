@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.4 — 文档对齐「已发布到 npm」
+
+- `dsh-rea-powerpack` 已发布到 npm：<https://www.npmjs.com/package/dsh-rea-powerpack>
+  （首版 `0.1.3`，用 granular access token + bypass 2FA 发布；发布后约 90 秒才在
+  packument 里出现 `0.1.3`，期间重发会得到 `409 Cannot publish over previously
+  staged version`，属正常）。0.1.3 的 README 还写着「npm 未发布」，本版只改文档：
+  - README 徽章加 npm 版本，仓库行同时给 GitHub 与 npm 链接；
+  - 「安装」段改为 npm 优先（桌面 UI 填包名；web/tui `dsh plugin --profile web add
+    dsh-rea-powerpack`），源码安装降级为开发者路径；
+  - 「日常维护」段的升级方式同步；
+  - ARCHITECTURE §9 发布段与版本历史同步。
+- 无运行时代码变更。
+
 ## 0.1.3 — CI 覆盖目标平台 + 测试与宿主机解耦
 
 

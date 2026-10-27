@@ -1,6 +1,6 @@
 {
   "name": "dsh-rea-powerpack",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Maxed-out REA for DeepSeek Harness: managed analysis engines (adb, apktool, jadx, Ghidra, WABT, frida), a pinned rea-agents MCP server, health-checked updates and a capability doctor.",
   "license": "MIT",
   "keywords": [
