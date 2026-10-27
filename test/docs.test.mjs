@@ -92,14 +92,17 @@ test('docs: every engine id named in the ARCHITECTURE §5 catalog list is docume
   }
 });
 
-test('docs: CI workflow runs the matrix on Node 22 and 24', () => {
+test('docs: CI workflow runs the matrix on Node 22 and 24 for both OS targets', () => {
   const path = join(root, '.github', 'workflows', 'ci.yml');
   assert.equal(existsSync(path), true, 'the CI workflow exists');
   const text = readFileSync(path, 'utf8');
+  // The catalog is Windows-targeted, so the target platform is a CI leg of its own;
+  // the Linux leg proves the pure-logic suites stay host independent.
+  assert.match(text, /os: \[windows-latest, ubuntu-latest\]/);
   assert.match(text, /node: \['22', '24'\]/);
+  assert.match(text, /runs-on: \$\{\{ matrix\.os \}\}/);
   assert.match(text, /npm test/);
   assert.match(text, /npm run lint/);
-  assert.match(text, /runs-on: ubuntu-latest/);
 });
 
 test('docs: the cross-references between documents resolve', () => {

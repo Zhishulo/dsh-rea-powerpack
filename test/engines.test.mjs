@@ -203,7 +203,7 @@ test('isWritable reports a writable directory and a blocked one', async function
 test('composeEnv: an empty manifest reports every tier 0/1 engine as missing', async function () {
   const home = await tempHome();
   for (const key of ['REA_ADB_PATH', 'REA_JADX_MCP_JAR', 'REA_GHIDRA_DIR']) delete process.env[key];
-  const composed = await composeEnv(home, {});
+  const composed = await composeEnv(home, {}, 'win32');
   assert.deepEqual(composed.env, {});
   assert.deepEqual(composed.pathPrepend, []);
   assert.deepEqual(composed.missing, ['java', 'ghidra', 'adb', 'apktool', 'jadx', 'wabt', 'python', 'frida']);
@@ -236,7 +236,7 @@ test('composeEnv: verified records publish env vars in manifest order', async fu
   });
   for (const key of ['REA_ADB_PATH', 'REA_JADX_MCP_JAR', 'JAVA_HOME']) delete process.env[key];
 
-  const composed = await composeEnv(home, {});
+  const composed = await composeEnv(home, {}, 'win32');
   assert.equal(composed.env.REA_JADX_MCP_JAR, jar);
   assert.equal(composed.env.REA_ADB_PATH, adbExe);
   assert.equal(composed.env.JAVA_HOME, jdk, 'a directory envKind exports the directory');
@@ -261,7 +261,7 @@ test('composeEnv: pathPrepend dedupes case-insensitively and keeps first order',
       record({ id: 'mitmproxy', pathPrepend: true, path: path.join(scripts, 'mitmdump.exe'), verified: true }),
     ],
   });
-  const composed = await composeEnv(home, {});
+  const composed = await composeEnv(home, {}, 'win32');
   assert.equal(composed.pathPrepend.length, 2, 'the Scripts directory appears once');
   assert.equal(composed.pathPrepend[0], path.join(home, 'engines', 'python'));
   assert.equal(composed.pathPrepend[1], scripts);
@@ -277,7 +277,7 @@ test('composeEnv: a user-set env var wins and is reported instead of overwritten
   const mine = path.join(home, 'my-jadx.jar');
   process.env.REA_JADX_MCP_JAR = mine;
   try {
-    const composed = await composeEnv(home, {});
+    const composed = await composeEnv(home, {}, 'win32');
     assert.equal(composed.env.REA_JADX_MCP_JAR, undefined, 'the composed env does not shadow the user');
     assert.equal(process.env.REA_JADX_MCP_JAR, mine, 'the process environment is untouched');
     assert.equal(composed.env.REA_POWERPACK_OVERRIDES, 'REA_JADX_MCP_JAR');
@@ -295,7 +295,7 @@ test('composeEnv: extraEnv is honoured before verified env vars and never shadow
         record({ id: 'ghidra', extraEnv: { REA_GHIDRA_DIR: 'C:\\managed-ghidra', REA_EXTRA: 'yes' } }),
       ],
     });
-    const composed = await composeEnv(home, {});
+    const composed = await composeEnv(home, {}, 'win32');
     assert.equal(composed.env.REA_GHIDRA_DIR, undefined, 'the user variable wins');
     assert.equal(composed.env.REA_EXTRA, 'yes', 'unclaimed extraEnv keys are exported');
   } finally {
@@ -309,7 +309,7 @@ test('composeEnv: a verified record without a path warns instead of guessing', a
     engines: [record({ id: 'wabt', envVar: 'REA_WABT_BIN_DIRECTORY', path: null, verified: true })],
   });
   delete process.env.REA_WABT_BIN_DIRECTORY;
-  const composed = await composeEnv(home, {});
+  const composed = await composeEnv(home, {}, 'win32');
   assert.equal(composed.env.REA_WABT_BIN_DIRECTORY, undefined);
   assert.equal(composed.warnings.length, 1);
   assert.match(composed.warnings[0], /wabt/);

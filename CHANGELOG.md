@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.3 — CI 覆盖目标平台 + 测试与宿主机解耦
+
+首推后 GitHub Actions 立刻变红：`composeEnv` 按 `process.platform` 过滤引擎目录，而引擎目录是
+Windows 定向的（`forPlatform('linux')` 为空），所以「空清单应报告哪些引擎缺失」这条断言在
+ubuntu runner 上得到 `[]`。这是测试依赖宿主机，不是实现错了。
+
+- `composeEnv(home, settings, platform = process.platform)` 新增可注入的 platform（默认仍是宿主），
+  体检与测试都能针对固定平台推理；`engines.test.mjs` 的 6 处调用统一钉住 `'win32'`。
+- CI 矩阵改为 `os: [windows-latest, ubuntu-latest] × node: [22, 24]`：Windows 腿是插件真正的目标平台，
+  Linux 腿保证纯逻辑测试保持与宿主机无关。
+- `docs.test.mjs` 的 CI 断言同步到新矩阵（检查 os 列表与 `runs-on: ${{ matrix.os }}`）。
 ## 0.1.2 — 验收工具链入库 + 文档对齐真机
 
 没有运行时代码变更：这一版把「怎么验证」也交给用户。

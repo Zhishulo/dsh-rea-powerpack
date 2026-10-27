@@ -10,11 +10,12 @@ permissions:
 
 jobs:
   test:
-    name: test (node ${{ matrix.node }})
-    runs-on: ubuntu-latest
+    name: test (${{ matrix.os }} · node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [windows-latest, ubuntu-latest]
         node: ['22', '24']
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +25,9 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Show toolchain
-        run: node --version && npm --version
+        run: node --version
+      - name: Show npm
+        run: npm --version
 
       - name: Run tests
         run: npm test
