@@ -9,11 +9,15 @@ Ghidra、JADX、WABT、frida 这些引擎得在这台机器上真的能跑。
 
 [![ci](https://github.com/Zhishulo/dsh-rea-powerpack/actions/workflows/ci.yml/badge.svg)](https://github.com/Zhishulo/dsh-rea-powerpack/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/dsh-rea-powerpack.svg)](https://www.npmjs.com/package/dsh-rea-powerpack)
+[![dsh market](https://img.shields.io/badge/dsh%20market-listed-2ea44f.svg)](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/blob/main/data/plugins/Zhishulo__dsh-rea-powerpack.yml)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D22.19.0-brightgreen.svg)](package.json)
 [![version](https://img.shields.io/badge/version-0.1.4-informational.svg)](CHANGELOG.md)
 
 仓库：<https://github.com/Zhishulo/dsh-rea-powerpack> · npm：<https://www.npmjs.com/package/dsh-rea-powerpack>（源码、issue 与发行版都在这里）
+
+已收录于 **DSH 插件市场**（[awesome-dsh-plugin #10097](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/10097)，2026-10-28 合并）——在 dshmarket 里搜 `dsh-rea-powerpack` 即可安装。
+
 dsh-rea-powerpack 干三件事：
 
 1. **引擎**：按矩阵检测 / 安装 / 卸载分析引擎，合成 `env` 与 `PATH` 喂给 REA；

@@ -1,15 +1,17 @@
 # DSH market listing — submission record
 
-Status: **PR open, CI green, awaiting maintainer review.**
+Status: **MERGED — the plugin is listed in the DSH market catalog.**
 
 | item | value |
 | --- | --- |
-| PR | [awesome-dsh-plugin/awesome-dsh-plugin#10097](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/10097) |
+| PR | [awesome-dsh-plugin/awesome-dsh-plugin\#10097](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/10097) |
 | title | `Add Zhishulo/dsh-rea-powerpack` |
 | head commit | `77e31ba015e8ec0c9dc280d35d620ca0c353a2e3` (fork `Zhishulo:main`) |
 | base commit | `0b3d3606b217699e7097a3c4d531bb90c6c3887c` (upstream `main` at submission time) |
 | diff | 1 file, +6 / -0 |
 | check run | [40666578481](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/actions/runs/40666578481) — `PR check`, 15/15 steps success |
+| **merged** | **2026-10-28T17:10:09Z** by `fkysly`, merge commit `257fe42239` |
+| live entry | `data/plugins/Zhishulo__dsh-rea-powerpack.yml` (sha `e13a001ea5`) |
 | plugin version submitted | 0.1.4 (published on npm) |
 
 ## Entry file
@@ -26,6 +28,15 @@ description:
 ```
 
 Notes: only `description.en` is mandatory upstream; a value containing `: ` must be quoted (both of ours are); the generated READMEs are never edited by hand.
+
+## Timeline
+
+- `2026-10-28T09:44Z` — PR opened, `PR check` queued.
+- `2026-10-28T10:05Z` — `PR check` finished: 15/15 steps success; `Submission gate` success as well.
+- `2026-10-28T17:10Z` — merged by a maintainer (about 7.5 h after opening).
+- Upstream merged with no review comments and no requested changes; the entry file was merged byte-identical.
+
+While waiting, the PR stayed `mergeable_state: clean` with an unmoved base (`0b3d360`), so no rebase was ever needed. Note that the upstream repo was in a merge pause during that window — `main` had last advanced at `2026-10-27T20:20Z` and ~370 PRs were queued — so a multi-hour wait is normal and not a signal about the submission.
 
 ## Why the fork was fast-forwarded first
 
@@ -57,7 +68,7 @@ curl -sS -H 'Accept: application/vnd.github+json' \
   'https://api.github.com/repos/awesome-dsh-plugin/awesome-dsh-plugin/actions/runs?head_sha=77e31ba015e8ec0c9dc280d35d620ca0c353a2e3'
 ```
 
-If upstream `main` advances so far that the PR turns `mergeable_state: dirty`, or `PR check` goes red because the generated READMEs changed, refresh the fork again (`PATCH .../git/refs/heads/main` with the new upstream sha), re-add the entry file on top, and push. The entry content itself does not need to change.
+This section is kept for reference only — the listing is live, so no further action is needed unless the entry has to be updated later. For a future entry edit, branch from current upstream `main` instead of resurrecting the old fork state, and re-run the pre-flight duplicate check before opening a PR.
 
 Approximate upstream cadence at submission time: ~10 PRs per 45 minutes, merged by a human after review, so a quiet PR for a few hours is normal.
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+
+- Listed in the DSH plugin market catalog: [awesome-dsh-plugin#10097](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/10097) merged 2026-10-28.
+
 ## 0.1.4 — 文档对齐「已发布到 npm」
 
 - `dsh-rea-powerpack` 已发布到 npm：<https://www.npmjs.com/package/dsh-rea-powerpack>
