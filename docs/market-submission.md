@@ -38,6 +38,28 @@ Notes: only `description.en` is mandatory upstream; a value containing `: ` must
 
 While waiting, the PR stayed `mergeable_state: clean` with an unmoved base (`0b3d360`), so no rebase was ever needed. Note that the upstream repo was in a merge pause during that window — `main` had last advanced at `2026-10-27T20:20Z` and ~370 PRs were queued — so a multi-hour wait is normal and not a signal about the submission.
 
+## Live listing (verified 2026-10-30)
+
+The catalog site finished rebuilding and now serves the entry in `plugins.json` (7,723 entries at the time of the check):
+
+```json
+{
+  "name": "dsh-rea-powerpack",
+  "owner": "Zhishulo",
+  "url": "https://github.com/Zhishulo/dsh-rea-powerpack",
+  "page": "https://awesome-dsh-plugin.com/p/Zhishulo/dsh-rea-powerpack/",
+  "category": "tools",
+  "npm": "dsh-rea-powerpack",
+  "version": "0.1.4",
+  "capabilities": ["shell", "fs-write", "fs-read", "network", "env"],
+  "capabilityRedLines": [],
+  "install": "dsh plugin --profile web add dsh-rea-powerpack",
+  "added": "2026-10-28"
+}
+```
+
+So installs now work through the catalog path (`dsh plugin --profile <name> add dsh-rea-powerpack`) as well as through the desktop UI's plugin market. The `downloads` counter in that payload is a registry figure refreshed daily, not an install count from this project.
+
 ## Why the fork was fast-forwarded first
 
 The fork was `ahead 1 / behind 369` when the entry was prepared. `pr-check.yml` contains a **Stale-fork guard**: a PR that deletes more than two existing `data/plugins/*.yml` files, and more deletions than additions, fails. A stale fork silently deletes entries that landed upstream after it forked. So the fork's `main` was reset to upstream `main`, and only then was the single entry file added:
